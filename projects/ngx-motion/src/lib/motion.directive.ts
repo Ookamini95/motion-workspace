@@ -127,6 +127,45 @@ export class MotionDirective {
   // TODO when released use motion APIs
 
   MotionInitial = input<DOMKeyframesDefinition>(); // Needed when non standard animations are applied in order to correctly revert them (e.g. pathlenght)
+
+  // Motion Tap
+  MotionTap = input<DOMKeyframesDefinition>();
+  #MotionTapAnimation = signal<AnimationPlaybackControls | undefined>(
+    undefined
+  );
+  @HostListener('mousedown')
+  @HostListener('touchstart')
+  onTouchStart() {
+    let animation: AnimationPlaybackControls | undefined;
+    const tapAnimationOptions = this.MotionTap();
+    if (tapAnimationOptions) {
+      animation = animate(
+        this.#MotionElement,
+        tapAnimationOptions,
+        this.MotionTransition()
+      );
+      this.MotionAnimation.set(animation);
+      this.#MotionTapAnimation.set(animation);
+    }
+  }
+  @HostListener('mouseup')
+  @HostListener('touchend')
+  // @HostListener('mouseleave') TODO find fix: work-around > call this from hover:onMouseLeave
+  onTouchEnd() {
+    let animation: AnimationPlaybackControls | undefined;
+    const active = this.MotionTap();
+    if (active) {
+      animation = animate(
+        this.#MotionElement,
+        this.MotionInitial() ?? GeometricIdentityTransform,
+        {
+          ...this.MotionTransition(),
+          duration: this.#MotionTapAnimation()?.time,
+        }
+      );
+      this.MotionAnimation.set(animation);
+    }
+  }
   // Hover
   #MotionHoverAnimation = signal<AnimationPlaybackControls | undefined>(
     undefined
@@ -159,15 +198,22 @@ export class MotionDirective {
       );
       this.MotionAnimation.set(animation);
     }
+
+    this.onTouchEnd() // TODO temp workaround for HostListener overlap https://github.com/angular/angular/issues/26729
   }
 
+
+
+  // TODO Drag
+  // TODO Variants
+
   testAnimation() {
-    const sequence: AnimationSequence = [
-      [this.#MotionElement, { opacity: 1, x: 100 }, { duration: 1 }],
-      [this.#MotionElement, { opacity: 0.5, x: 200 }, { duration: 1 }],
-      [this.#MotionElement, { opacity: 1, x: -100 }, { duration: 1 }],
-    ];
-    const animation = scroll(animate(sequence));
+    // const sequence: AnimationSequence = [
+    //   [this.#MotionElement, { opacity: 1, x: 100 }, { duration: 1 }],
+    //   [this.#MotionElement, { opacity: 0.5, x: 200 }, { duration: 1 }],
+    //   [this.#MotionElement, { opacity: 1, x: -100 }, { duration: 1 }],
+    // ];
+    // const animation = scroll(animate(sequence));
     // this.#MotionElement,
     // this.MotionAnimate() ?? { scale: 3 },
     // this.MotionTransition() ?? { duration: 2 }

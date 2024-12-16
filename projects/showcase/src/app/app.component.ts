@@ -16,7 +16,7 @@ export class AppComponent {
     title: 'wow',
   };
   testAnimationObj: DOMKeyframesDefinition = {
-    scale: 3,
+    scale: 0.9,
     backgroundColor: "red",
   };
   testAnimationObj2: DOMKeyframesDefinition = {
