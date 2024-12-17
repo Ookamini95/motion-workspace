@@ -233,8 +233,19 @@
         </defs>
       </svg>
       <h1 Motion
-      [MotionTap]="testAnimationObj"
-      >Hello, {{ title }}</h1>
+      [MotionAnimate]="testAnimationObj"
+      [MotionTransition]="testTransitionObj"
+      (click)="someTest()"
+      >
+      <div>
+        Hello, {{ title }}
+        {{ value }}
+      </div>
+      <div>asd1</div>
+      <div>asd2</div>
+      <div>asd3</div>
+      <div>asd4</div>
+    </h1>
       <p>Congratulations! Your app is running. 🎉</p>
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>

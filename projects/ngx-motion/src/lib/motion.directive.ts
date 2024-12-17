@@ -1,4 +1,5 @@
 import {
+  computed,
   Directive,
   effect,
   ElementRef,
@@ -18,6 +19,7 @@ import {
   AnimationPlaybackControls,
   AnimationSequence,
   DynamicAnimationOptions,
+  DynamicOption,
   InViewOptions,
   ScrollAnimationOptions,
   SequenceOptions,
@@ -29,6 +31,10 @@ import { GeometricIdentityTransform } from './utils/motion.constants';
 })
 export class MotionDirective {
   #MotionElement: Element = inject(ElementRef).nativeElement;
+  #MotionChildren: Element[] = inject(ElementRef).nativeElement.children;
+  get #children() {
+    return Array.from(this.#MotionChildren)
+  }
 
   // Motion animations
   MotionAnimate = input<DOMKeyframesDefinition | AnimationSequence>();
@@ -36,21 +42,34 @@ export class MotionDirective {
   #MotionAnimateEffect = effect(() => {
     let animation: AnimationPlaybackControls | undefined;
     const animateOptions = this.MotionAnimate();
+
     if (animateOptions) {
       if (Array.isArray(animateOptions))
         animation = animate(animateOptions, this.MotionSequence());
-      else
-        animation = animate(
-          this.#MotionElement,
-          animateOptions,
-          this.MotionTransition()
-        );
+      else {
+        const children = this.#children;
+        const stagger = this.#MotionStagger();
+        if (children.length && stagger) {
+          animation = animate(
+            children,
+            animateOptions,
+            this.MotionTransition()
+          );
+        } else {
+          animation = animate(
+            this.#MotionElement,
+            animateOptions,
+            this.MotionTransition()
+          );
+        }
+      }
 
       this.MotionAnimation.set(animation);
     }
     return () => animation?.stop();
   });
 
+  // Motion Scroll
   MotionScroll = input<DOMKeyframesDefinition | AnimationSequence | OnScroll>();
   MotionScrollOptions = input<ScrollAnimationOptions>();
   #MotionScrollEffect = effect(() => {
@@ -64,6 +83,15 @@ export class MotionDirective {
         animation = animate(scrollAnimationOptions, this.MotionSequence());
         scrollAnimation = scroll(animation, this.MotionScrollOptions());
       } else {
+        const children = Array.from(this.#MotionChildren);
+        const stagger = this.#MotionStagger();
+        if (children.length && stagger) {
+          animation = animate(
+            children,
+            scrollAnimationOptions,
+            this.MotionTransition()
+          );
+        }
         animation = animate(
           this.#MotionElement,
           scrollAnimationOptions,
@@ -78,6 +106,7 @@ export class MotionDirective {
     };
   });
 
+  // Motion in View
   MotionView = input<DOMKeyframesDefinition | AnimationSequence | OnStart>();
   MotionViewOptions = input<InViewOptions>();
   #MotionViewEffect = effect(() => {
@@ -99,11 +128,21 @@ export class MotionDirective {
         );
       } else {
         const inViewHandler = () => {
-          animation = animate(
-            this.#MotionElement,
-            viewAnimationOptions,
-            this.MotionTransition()
-          );
+          const children = Array.from(this.#MotionChildren);
+          const stagger = this.#MotionStagger();
+          if (children.length && stagger) {
+            animation = animate(
+              children,
+              viewAnimationOptions,
+              this.MotionTransition()
+            );
+          } else {
+            animation = animate(
+              this.#MotionElement,
+              viewAnimationOptions,
+              this.MotionTransition()
+            );
+          }
           return () => animation?.stop();
         };
         viewAnimation = inView(
@@ -122,6 +161,14 @@ export class MotionDirective {
   // Motion animation options
   MotionTransition = input<DynamicAnimationOptions>();
   MotionSequence = input<SequenceOptions>();
+
+  // Derived options
+  #MotionStagger = computed<DynamicOption<number> | undefined>(() => {
+    const transition = this.MotionTransition();
+    return transition?.delay && typeof transition.delay === 'function'
+      ? transition.delay
+      : undefined;
+  });
 
   // Angular fills missing APIs: hover, variants...
   // TODO when released use motion APIs
@@ -169,7 +216,7 @@ export class MotionDirective {
   // Hover
   #MotionHoverAnimation = signal<AnimationPlaybackControls | undefined>(
     undefined
-  );
+  ); // Used internally to extract timing for hover
   MotionHover = input<DOMKeyframesDefinition>();
   @HostListener('mouseenter') onMouseEnter() {
     let animation: AnimationPlaybackControls | undefined;
@@ -199,13 +246,15 @@ export class MotionDirective {
       this.MotionAnimation.set(animation);
     }
 
-    this.onTouchEnd() // TODO temp workaround for HostListener overlap https://github.com/angular/angular/issues/26729
+    this.onTouchEnd(); // TODO temp workaround for HostListener overlap https://github.com/angular/angular/issues/26729
   }
-
-
 
   // TODO Drag
   // TODO Variants
+
+  #makeAnimation() {
+
+  }
 
   testAnimation() {
     // const sequence: AnimationSequence = [

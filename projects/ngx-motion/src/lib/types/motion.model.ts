@@ -1,6 +1,7 @@
 import { SVGAttributes } from './svg.model';
 import { CSSStyleDeclarationWithTransform } from './css.model';
 import { EasingFunction } from './animate.model';
+import { Easing } from 'motion';
 
 export type StyleKeyframesDefinition = {
   [K in keyof CSSStyleDeclarationWithTransform]?: ValueKeyframesDefinition;
@@ -78,3 +79,18 @@ export type ViewChangeHandler = (entry: IntersectionObserverEntry) => void;
 export type OnStart = (
   entry: IntersectionObserverEntry
 ) => void | ViewChangeHandler;
+
+export type DynamicOption<T> = (i: number, total: number) => T
+
+export type StaggerOrigin = "first" | "last" | "center" | number
+export type StaggerOptions = {
+    startDelay?: number
+    from?: StaggerOrigin
+    ease?: Easing
+}
+export type StaggerFunction = (
+  duration?: number,
+  { startDelay, from, ease }?: StaggerOptions
+) => DynamicOption<number>
+
+// stagger(duration?: number, { startDelay, from, ease }?: StaggerOptions): DynamicOption<number>
