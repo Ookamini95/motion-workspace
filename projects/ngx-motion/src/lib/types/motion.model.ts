@@ -1,7 +1,6 @@
 import { SVGAttributes } from './svg.model';
 import { CSSStyleDeclarationWithTransform } from './css.model';
-import { EasingFunction } from './animate.model';
-import { Easing } from 'motion';
+import { Easing, EasingFunction } from 'motion';
 
 export type StyleKeyframesDefinition = {
   [K in keyof CSSStyleDeclarationWithTransform]?: ValueKeyframesDefinition;
@@ -93,4 +92,4 @@ export type StaggerFunction = (
   { startDelay, from, ease }?: StaggerOptions
 ) => DynamicOption<number>
 
-// stagger(duration?: number, { startDelay, from, ease }?: StaggerOptions): DynamicOption<number>
+export type HexColor = `#${string}`;

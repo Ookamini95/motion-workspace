@@ -33,35 +33,37 @@ export class MotionDirective {
   #MotionElement: Element = inject(ElementRef).nativeElement;
   #MotionChildren: Element[] = inject(ElementRef).nativeElement.children;
   get #children() {
-    return Array.from(this.#MotionChildren)
+    return Array.from(this.#MotionChildren);
   }
 
-  // Motion animations
-  MotionAnimate = input<DOMKeyframesDefinition | AnimationSequence>();
+  // Motion animation model
   MotionAnimation = model<AnimationPlaybackControls>();
+  // Motion animation options
+  MotionTransition = input<DynamicAnimationOptions>();
+  // Derived options
+  #MotionStagger = computed<DynamicOption<number> | undefined>(() => {
+    const transition = this.MotionTransition();
+    return transition?.delay && typeof transition.delay === 'function'
+      ? transition.delay
+      : undefined;
+  });
+
+  // Motion animations
+  MotionAnimate = input<DOMKeyframesDefinition>();
   #MotionAnimateEffect = effect(() => {
     let animation: AnimationPlaybackControls | undefined;
     const animateOptions = this.MotionAnimate();
-
     if (animateOptions) {
-      if (Array.isArray(animateOptions))
-        animation = animate(animateOptions, this.MotionSequence());
-      else {
-        const children = this.#children;
-        const stagger = this.#MotionStagger();
-        if (children.length && stagger) {
-          animation = animate(
-            children,
-            animateOptions,
-            this.MotionTransition()
-          );
-        } else {
-          animation = animate(
-            this.#MotionElement,
-            animateOptions,
-            this.MotionTransition()
-          );
-        }
+      const children = this.#children;
+      const stagger = this.#MotionStagger();
+      if (children.length && stagger) {
+        animation = animate(children, animateOptions, this.MotionTransition());
+      } else {
+        animation = animate(
+          this.#MotionElement,
+          animateOptions,
+          this.MotionTransition()
+        );
       }
 
       this.MotionAnimation.set(animation);
@@ -70,7 +72,7 @@ export class MotionDirective {
   });
 
   // Motion Scroll
-  MotionScroll = input<DOMKeyframesDefinition | AnimationSequence | OnScroll>();
+  MotionScroll = input<DOMKeyframesDefinition | OnScroll>();
   MotionScrollOptions = input<ScrollAnimationOptions>();
   #MotionScrollEffect = effect(() => {
     let animation: AnimationPlaybackControls | undefined;
@@ -79,11 +81,8 @@ export class MotionDirective {
     if (scrollAnimationOptions) {
       if (typeof scrollAnimationOptions === 'function') {
         scrollAnimation = scroll(scrollAnimationOptions);
-      } else if (Array.isArray(scrollAnimationOptions)) {
-        animation = animate(scrollAnimationOptions, this.MotionSequence());
-        scrollAnimation = scroll(animation, this.MotionScrollOptions());
       } else {
-        const children = Array.from(this.#MotionChildren);
+        const children = this.#children;
         const stagger = this.#MotionStagger();
         if (children.length && stagger) {
           animation = animate(
@@ -107,7 +106,7 @@ export class MotionDirective {
   });
 
   // Motion in View
-  MotionView = input<DOMKeyframesDefinition | AnimationSequence | OnStart>();
+  MotionView = input<DOMKeyframesDefinition | OnStart>();
   MotionViewOptions = input<InViewOptions>();
   #MotionViewEffect = effect(() => {
     let animation: AnimationPlaybackControls | undefined;
@@ -116,19 +115,9 @@ export class MotionDirective {
     if (viewAnimationOptions) {
       if (typeof viewAnimationOptions === 'function') {
         viewAnimation = inView(this.#MotionElement, viewAnimationOptions);
-      } else if (Array.isArray(viewAnimationOptions)) {
-        const inViewHandler = () => {
-          animation = animate(viewAnimationOptions, this.MotionSequence());
-          return () => animation?.stop();
-        };
-        viewAnimation = inView(
-          this.#MotionElement,
-          inViewHandler,
-          this.MotionViewOptions()
-        );
       } else {
         const inViewHandler = () => {
-          const children = Array.from(this.#MotionChildren);
+          const children = this.#children;
           const stagger = this.#MotionStagger();
           if (children.length && stagger) {
             animation = animate(
@@ -156,18 +145,6 @@ export class MotionDirective {
     return () => {
       if (viewAnimation) return viewAnimation();
     };
-  });
-
-  // Motion animation options
-  MotionTransition = input<DynamicAnimationOptions>();
-  MotionSequence = input<SequenceOptions>();
-
-  // Derived options
-  #MotionStagger = computed<DynamicOption<number> | undefined>(() => {
-    const transition = this.MotionTransition();
-    return transition?.delay && typeof transition.delay === 'function'
-      ? transition.delay
-      : undefined;
   });
 
   // Angular fills missing APIs: hover, variants...
@@ -251,10 +228,6 @@ export class MotionDirective {
 
   // TODO Drag
   // TODO Variants
-
-  #makeAnimation() {
-
-  }
 
   testAnimation() {
     // const sequence: AnimationSequence = [

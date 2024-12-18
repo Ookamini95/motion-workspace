@@ -26,7 +26,7 @@ export class AppComponent {
   }
 
   someTest() {
-    const animation = this.motionservice.fromToAnimate(0, 60, {
+    const animation = this.motionservice.animateValues(0, 60, {
       duration: 3,
       ease: 'easeInOut',
       onUpdate: (latest) => {
@@ -43,7 +43,7 @@ export class AppComponent {
     animation.then(() => {
       console.log('finished ');
     });
-    const animationColor = this.motionservice.fromToAnimate(
+    const animationColor = this.motionservice.animateValues(
       '#ffffff',
       '#000000',
       {
