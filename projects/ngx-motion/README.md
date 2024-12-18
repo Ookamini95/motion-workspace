@@ -1,5 +1,6 @@
 # NgxMotion
 
+This is a small wrapper around motionJS (https://motion.dev/)
 
 ## How to use 
 (TODO: write a better how to use)
