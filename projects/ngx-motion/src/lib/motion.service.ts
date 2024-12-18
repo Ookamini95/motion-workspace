@@ -45,6 +45,7 @@ export class MotionService {
     return inView(target, inViewHandler, inViewOptions);
   }
 
+  // TODO test for threeJS
   animateObject<T extends Object>(
     obj: T,
     keyframes: ObjectTarget<T>,
