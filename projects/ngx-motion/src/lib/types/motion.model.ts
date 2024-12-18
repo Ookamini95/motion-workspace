@@ -1,6 +1,6 @@
-import { SVGAttributes } from './svg.model';
-import { CSSStyleDeclarationWithTransform } from './css.model';
 import { Easing, EasingFunction } from 'motion';
+import { CSSStyleDeclarationWithTransform } from './css.model';
+import { SVGAttributes } from './svg.model';
 
 export type StyleKeyframesDefinition = {
   [K in keyof CSSStyleDeclarationWithTransform]?: ValueKeyframesDefinition;

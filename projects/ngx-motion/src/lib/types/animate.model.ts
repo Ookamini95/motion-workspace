@@ -1,3 +1,4 @@
+import { Easing } from 'motion';
 import {
   ContainerTargetOffset,
   DOMKeyframesDefinition,
@@ -7,7 +8,6 @@ import {
 } from './motion.model';
 import { CSSStyleDeclarationWithTransform } from './css.model';
 import { SVGAttributes } from './svg.model';
-import { Easing } from 'motion';
 
 export interface ValueAnimationTransition<V = any>
   extends Transition,
@@ -276,7 +276,7 @@ type MarginType =
   | `${MarginValue} ${MarginValue} ${MarginValue}`
   | `${MarginValue} ${MarginValue} ${MarginValue} ${MarginValue}`;
 
-export interface InViewOptions {
+export interface InViewAnimationOptions {
   root?: Element | Document;
   margin?: MarginType;
   amount?: 'some' | 'all' | number;

@@ -5,7 +5,7 @@ import {
   AnimationSequence,
   DynamicAnimationOptions,
   ElementOrSelector,
-  InViewOptions,
+  InViewAnimationOptions,
   ObjectTarget,
   ScrollAnimationOptions,
   SequenceOptions,
@@ -35,14 +35,14 @@ export class MotionService {
     sequence: AnimationSequence,
     target: ElementOrSelector,
     sequenceOptions?: SequenceOptions,
-    inViewOptions?: InViewOptions
+    InViewAnimationOptions?: InViewAnimationOptions
   ): VoidFunction {
     let animation: AnimationPlaybackControls | undefined;
     const inViewHandler = () => {
       animation = animate(sequence, sequenceOptions);
       return () => animation?.stop();
     };
-    return inView(target, inViewHandler, inViewOptions);
+    return inView(target, inViewHandler, InViewAnimationOptions);
   }
 
   // TODO test for threeJS
@@ -69,14 +69,14 @@ export class MotionService {
     keyframes: ObjectTarget<T>,
     target: ElementOrSelector,
     animationOptions?: DynamicAnimationOptions,
-    inViewOptions?: InViewOptions
+    InViewAnimationOptions?: InViewAnimationOptions
   ): VoidFunction {
     let animation: AnimationPlaybackControls | undefined;
     const inViewHandler = () => {
       animation = this.animateObject(obj, keyframes, animationOptions);
       return () => animation?.stop();
     };
-    return inView(target, inViewHandler, inViewOptions);
+    return inView(target, inViewHandler, InViewAnimationOptions);
   }
 
   animateValues(

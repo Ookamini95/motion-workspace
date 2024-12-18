@@ -17,12 +17,10 @@ import {
 } from './types/motion.model';
 import {
   AnimationPlaybackControls,
-  AnimationSequence,
   DynamicAnimationOptions,
   DynamicOption,
-  InViewOptions,
+  InViewAnimationOptions,
   ScrollAnimationOptions,
-  SequenceOptions,
 } from './types/animate.model';
 import { GeometricIdentityTransform } from './utils/motion.constants';
 
@@ -107,7 +105,7 @@ export class MotionDirective {
 
   // Motion in View
   MotionView = input<DOMKeyframesDefinition | OnStart>();
-  MotionViewOptions = input<InViewOptions>();
+  MotionViewOptions = input<InViewAnimationOptions>();
   #MotionViewEffect = effect(() => {
     let animation: AnimationPlaybackControls | undefined;
     let viewAnimation: VoidFunction | undefined;
@@ -149,7 +147,7 @@ export class MotionDirective {
 
   // Angular fills missing APIs: hover, variants...
   // TODO when released use motion APIs
-
+  // TODO Children stagger
   MotionInitial = input<DOMKeyframesDefinition>(); // Needed when non standard animations are applied in order to correctly revert them (e.g. pathlenght)
 
   // Motion Tap

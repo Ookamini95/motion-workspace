@@ -1,6 +1,7 @@
 import { DOMKeyframesDefinition } from "../types/motion.model";
 
 // ? TODO StyleIdentityTransform ?
+// ? TODO external custom setter ?
 export const GeometricIdentityTransform: DOMKeyframesDefinition = {
   x: 0,
   y: 0,

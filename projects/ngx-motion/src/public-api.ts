@@ -37,7 +37,7 @@ export {
   type AnimationSequence,
   type SequenceOptions,
   type ScrollAnimationOptions,
-  type InViewOptions,
+  type InViewAnimationOptions,
   type DynamicAnimationOptions,
 } from './lib/types/animate.model';
 export {
